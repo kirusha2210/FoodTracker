@@ -3,6 +3,8 @@ package repository
 import cats.effect.IO
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
+import io.circe.Decoder
+import io.circe.generic.semiauto.deriveDecoder
 
 final case class Meal(
                        id: Long,
@@ -19,6 +21,9 @@ final case class NewMeal(
                     eatenAt: String,
                     notes: Option[String]
                   )
+object NewMeal {
+  given Decoder[NewMeal] = deriveDecoder[NewMeal]
+}
 
 final class MealRepository(xa: Transactor[IO]) {
   def create(meal: NewMeal): IO[Int] = {
@@ -27,8 +32,9 @@ final class MealRepository(xa: Transactor[IO]) {
          |values (
          |  ${meal.name},
          |  ${meal.calories},
-         |  ${meal.eatenAt}
+         |  ${meal.eatenAt},
          |  ${meal.notes},
+         |  datetime('now')
          |)
          |""".stripMargin.update.run.transact(xa)
   }

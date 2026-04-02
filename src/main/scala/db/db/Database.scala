@@ -1,3 +1,5 @@
+package db
+
 import cats.effect.{IO, Resource}
 import doobie.*
 import doobie.implicits.*
@@ -6,7 +8,7 @@ import doobie.util.transactor.Transactor
 import java.nio.file.{Files, Paths}
 
 object Database {
-  private val dbPath = "data/foodtracker.db"
+  private val dbPath = "src/main/resources/data/foodtracker.db"
   private val jdbcUrl = s"jdbc:sqlite:$dbPath"
   private val user = "user"
   private val password = "user"

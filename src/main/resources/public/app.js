@@ -100,7 +100,7 @@ const render = () => {
   renderMeals();
 };
 
-mealForm.addEventListener("submit", (event) => {
+mealForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const formData = new FormData(mealForm);
@@ -110,6 +110,27 @@ mealForm.addEventListener("submit", (event) => {
   const notes = String(formData.get("notes") || "").trim();
 
   if (!name || !Number.isFinite(calories) || !time) {
+    return;
+  }
+
+  const now = new Date();
+  const eatenAt = `${now.toISOString().slice(0, 10)}T${time}:00`;
+
+  const response = await fetch("/meals", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name,
+      calories,
+      eatenAt,
+      notes: notes || null
+    })
+  });
+
+  if (!response.ok) {
+    console.error("Failed to create meal");
     return;
   }
 
