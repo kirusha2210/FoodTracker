@@ -55,6 +55,13 @@
                     <p class="eyebrow">Quick Add</p>
                     <h2>Capture a meal</h2>
                 </div>
+                <div class="library-teaser">
+                    <div>
+                        <p class="eyebrow">Food Library</p>
+                        <strong>Use saved dishes instead of typing everything from scratch.</strong>
+                    </div>
+                    <button id="open-food-library" class="secondary-btn" type="button">Open library</button>
+                </div>
                 <form id="meal-form" class="meal-form">
                     <label>
                         Meal name
@@ -88,6 +95,73 @@
         </section>
     </main>
 </div>
+
+<div id="food-library-overlay" class="overlay hidden"></div>
+<aside id="food-library" class="food-library hidden" aria-hidden="true">
+    <div class="library-header">
+        <div>
+            <p class="eyebrow">Saved Foods</p>
+            <h2>Build meals from your library</h2>
+        </div>
+        <button id="close-food-library" class="icon-btn" type="button" aria-label="Close food library">Close</button>
+    </div>
+
+    <section class="library-section">
+        <label>
+            Search foods
+            <input id="food-search" type="search" placeholder="Try Greek yogurt or rice bowl" />
+        </label>
+        <div id="food-library-list" class="food-library-list"></div>
+    </section>
+
+    <section class="library-section create-food-section">
+        <div class="section-heading">
+            <p class="eyebrow">Create Custom Food</p>
+            <h2>Add to your library</h2>
+        </div>
+        <form id="food-template-form" class="meal-form">
+            <label>
+                Food name
+                <input id="food-template-name" name="foodName" type="text" placeholder="Turkey sandwich" required />
+            </label>
+            <div class="form-row">
+                <label>
+                    Calories
+                    <input id="food-template-calories" name="calories" type="number" min="0" placeholder="520" required />
+                </label>
+                <label>
+                    Serving
+                    <input id="food-template-serving" name="serving" type="text" placeholder="1 bowl" required />
+                </label>
+            </div>
+            <div class="form-row macro-inputs">
+                <label>
+                    Protein
+                    <input id="food-template-protein" name="protein" type="number" min="0" placeholder="34" required />
+                </label>
+                <label>
+                    Fat
+                    <input id="food-template-fat" name="fat" type="number" min="0" placeholder="18" required />
+                </label>
+            </div>
+            <div class="form-row macro-inputs">
+                <label>
+                    Carbs
+                    <input id="food-template-carbs" name="carbs" type="number" min="0" placeholder="42" required />
+                </label>
+                <label>
+                    Water
+                    <input id="food-template-water" name="water" type="number" min="0" placeholder="250" />
+                </label>
+            </div>
+            <label>
+                Notes
+                <textarea id="food-template-notes" name="notes" rows="3" placeholder="High-protein lunch favorite"></textarea>
+            </label>
+            <button class="primary-btn" type="submit">Save food</button>
+        </form>
+    </section>
+</aside>
 
 <script src="/app.js"></script>
 </body>

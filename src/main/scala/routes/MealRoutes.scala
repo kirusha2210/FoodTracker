@@ -1,16 +1,19 @@
 package routes
 
 import cats.effect.IO
-import org.http4s.circe.jsonOf
-import org.http4s.{ContextRequest, EntityDecoder, HttpRoutes, MediaType}
+import io.circe.generic.auto.*
+import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.dsl.io.*
 import org.http4s.headers.`Content-Type`
-import repository.{MealRepository, NewMeal}
+import org.http4s.{EntityDecoder, EntityEncoder, HttpRoutes, MediaType}
+import repository.{Meal, MealRepository, NewMeal}
+import service.MealService
 
 import scala.io.Source
 
-class MealRoutes(repository: MealRepository) {
+class MealRoutes(service: MealService) {
   given EntityDecoder[IO, NewMeal] = jsonOf[IO, NewMeal]
+  given EntityEncoder[IO, List[Meal]] = jsonEncoderOf[IO, List[Meal]]
   private def loadResource(path: String): IO[String] =
     IO.blocking {
       val stream = Option(getClass.getResourceAsStream(path))
@@ -38,7 +41,10 @@ class MealRoutes(repository: MealRepository) {
 
     case req @ POST -> Root / "meals" =>
       req.as[NewMeal].flatMap { meal =>
-        repository.create(meal).flatMap(_ => Created())
+        service.create(meal).flatMap(_ => Created())
       }
+
+    case req @ GET -> Root / "meals" =>
+      service.listAll().flatMap(meals => Ok(meals))
   }
 }

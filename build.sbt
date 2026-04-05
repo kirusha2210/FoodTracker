@@ -22,6 +22,7 @@ lazy val root = (project in file("."))
       "ch.qos.logback" % "logback-classic" % V.logback,
       "org.http4s" %% "http4s-circe" % V.http4s,
       "io.circe" %% "circe-generic" % "0.14.15",
+      "org.scalatest" %% "scalatest" % "3.2.20" % "test",
     ),
     scalacOptions ++= Seq(
       "-deprecation",
