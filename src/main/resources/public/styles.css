@@ -284,7 +284,7 @@ input {
 .form-row {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 label {
@@ -473,7 +473,12 @@ body.library-open {
 
 @media (max-width: 640px) {
   .form-row,
+  .macro-inputs {
+    grid-template-columns: 1fr;
+  }
+
   .hero-actions {
+    display: grid;
     grid-template-columns: 1fr;
   }
 
@@ -491,9 +496,5 @@ body.library-open {
 
   .meal-meta {
     align-items: flex-start;
-  }
-
-  .macro-inputs {
-    grid-template-columns: 1fr;
   }
 }

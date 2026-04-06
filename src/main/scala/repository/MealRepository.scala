@@ -19,14 +19,12 @@ case class Meal(
                        createdAt: String
                      )
 
-case class MealSite(
+case class MealInput(
                        name: String,
                        foodId: Long,
                        portion: Int,
-                       calories: Int,
                        eatenAt: String,
-                       notes: Option[String],
-                       createdAt: String
+                       notes: Option[String]
                      )
 
 final case class NewMeal(
@@ -44,10 +42,11 @@ final case class NewMeal(
 class MealRepository(xa: Transactor[IO]) {
   def create(meal: NewMeal): IO[Int] = {
     sql"""
-         |INSERT INTO meals (name, food_id, calories, protein, fat, carbs, eaten_at, notes, created_at)
+         |INSERT INTO meals (name, food_id, portion, calories, protein, fat, carbs, eaten_at, notes, created_at)
          |values (
          |  ${meal.name},
          |  ${meal.foodId},
+         |  ${meal.portion},
          |  ${meal.calories},
          |  ${meal.protein},
          |  ${meal.fat},
@@ -59,9 +58,9 @@ class MealRepository(xa: Transactor[IO]) {
          |""".stripMargin.update.run.transact(xa)
   }
 
-  def listAll(): IO[List[Meal]] = {
+  def listAll: IO[List[Meal]] = {
     sql"""
-         select id, name, food_id, calories, eaten_at, notes, created_at
+         select id, name, food_id, portion, calories, protein, fat, carbs, eaten_at, notes, created_at
          from meals
          order by eaten_at desc
        """

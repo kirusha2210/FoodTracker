@@ -1,9 +1,8 @@
 package repository
 
 import cats.effect.IO
-import doobie.implicits.toSqlInterpolator
-import doobie.util.transactor.Transactor
 import doobie.implicits.*
+import doobie.util.transactor.Transactor
 
 case class Food(
                  id: Long,
@@ -36,5 +35,21 @@ class FoodRepository(xa: Transactor[IO]) {
           |   ${newFood.carbs},
           |)               
           |""".stripMargin.update.run.transact(xa)
+  }
+
+  def listAll: IO[List[Food]] = {
+    sql"""
+         select id, name, description, calories, protein, fat, carbs
+         from foods
+       """
+      .query[Food].to[List]
+      .transact(xa)
+  }
+  
+  def getById(id: Long): IO[Food] = {
+    sql"""select id, name, description, calories, protein, fat, carbs 
+          from foods
+          where id = $id
+          """.stripMargin.query[Food].unique.transact(xa)
   }
 }

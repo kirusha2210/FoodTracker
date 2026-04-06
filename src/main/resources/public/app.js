@@ -71,6 +71,7 @@ const foodSearchInput = document.querySelector("#food-search");
 const foodTemplateForm = document.querySelector("#food-template-form");
 const mealNameInput = document.querySelector("#meal-name");
 const mealCaloriesInput = document.querySelector("#meal-calories");
+const mealPortionInput = document.querySelector("#meal-portion");
 const mealTimeInput = document.querySelector("#meal-time");
 const mealNotesInput = document.querySelector("#meal-notes");
 
@@ -89,6 +90,7 @@ const normalizeFood = (food) => ({
 const normalizeMeal = (meal) => ({
   id: meal.id,
   name: meal.name,
+  portion: Number(meal.portion ?? 1),
   calories: Number(meal.calories ?? 0),
   protein: Number(meal.protein ?? 0),
   fat: Number(meal.fat ?? 0),
@@ -176,7 +178,7 @@ const renderMeals = () => {
         <li class="meal-item">
           <div>
             <p>${meal.name}</p>
-            <span>${meal.notes || "No extra notes"} · ${meal.protein}P / ${meal.fat}F / ${meal.carbs}C</span>
+            <span>Portion: ${meal.portion} · ${meal.notes || "No extra notes"} · ${meal.protein}P / ${meal.fat}F / ${meal.carbs}C</span>
           </div>
           <div class="meal-meta">
             <strong>${meal.calories} kcal</strong>
@@ -314,10 +316,11 @@ mealForm.addEventListener("submit", async (event) => {
   const formData = new FormData(mealForm);
   const name = String(formData.get("mealName") || "").trim();
   const calories = Number(formData.get("calories"));
+  const portion = Number(formData.get("portion"));
   const time = String(formData.get("time") || "").trim();
   const notes = String(formData.get("notes") || "").trim();
 
-  if (!name || !Number.isFinite(calories) || !time) {
+  if (!name || !Number.isFinite(calories) || !Number.isFinite(portion) || portion < 1 || !time) {
     return;
   }
 
@@ -329,11 +332,10 @@ mealForm.addEventListener("submit", async (event) => {
     await createMeal({
       name,
       calories,
+      portion,
       eatenAt,
       notes: notes || null,
-      protein: selectedFood?.protein ?? 0,
-      fat: selectedFood?.fat ?? 0,
-      carbs: selectedFood?.carbs ?? 0
+      foodId: selectedFood?.id ?? null
     });
 
     mealForm.reset();

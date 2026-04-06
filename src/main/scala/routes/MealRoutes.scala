@@ -6,14 +6,16 @@ import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.dsl.io.*
 import org.http4s.headers.`Content-Type`
 import org.http4s.{EntityDecoder, EntityEncoder, HttpRoutes, MediaType}
-import repository.{Meal, MealRepository, NewMeal}
+import repository.{Meal, MealInput, NewMeal}
 import service.MealService
 
 import scala.io.Source
 
 class MealRoutes(service: MealService) {
   given EntityDecoder[IO, NewMeal] = jsonOf[IO, NewMeal]
+  given EntityDecoder[IO, MealInput] = jsonOf[IO, MealInput]
   given EntityEncoder[IO, List[Meal]] = jsonEncoderOf[IO, List[Meal]]
+  
   private def loadResource(path: String): IO[String] =
     IO.blocking {
       val stream = Option(getClass.getResourceAsStream(path))
@@ -40,11 +42,11 @@ class MealRoutes(service: MealService) {
       )
 
     case req @ POST -> Root / "meals" =>
-      req.as[NewMeal].flatMap { meal =>
-        service.create(meal).flatMap(_ => Created())
+      req.as[MealInput].flatMap { mealInput =>
+        service.create(mealInput).flatMap(_ => Created())
       }
 
-    case req @ GET -> Root / "meals" =>
+    case GET -> Root / "meals" =>
       service.listAll().flatMap(meals => Ok(meals))
   }
 }

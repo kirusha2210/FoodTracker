@@ -1,26 +1,30 @@
 package service
 
 import cats.effect.IO
-import repository.{Food, MealRepository, MealSite, NewMeal}
+import repository.*
 
-class MealService(repository: MealRepository) {
-  def create(food: Food, mealSite: MealSite): IO[Int] = {
-    repository.create(combineMeal(food, mealSite))
+class MealService(repository: MealRepository, foodRepository: FoodRepository) {
+  def create(mealInput: MealInput): IO[Int] = {
+    combineMeal(mealInput).flatMap(repository.create)
   }
 
-  def combineMeal(food: Food, mealSite: MealSite): NewMeal =
-    NewMeal(
-      name = mealSite.name,
-      foodId = mealSite.foodId,
-      portion = mealSite.portion,
-      calories = getCalories(mealSite.portion, food),
-      protein = getProtein(mealSite.portion, food),
-      fat = getFat(mealSite.portion, food),
-      carbs = getCarbs(mealSite.portion, food),
-      eatenAt = mealSite.eatenAt,
-      notes = mealSite.notes
-    )
+  def listAll(): IO[List[Meal]] = repository.listAll
 
+  private def combineMeal(mealSite: MealInput): IO[NewMeal] =
+    foodRepository.getById(mealSite.foodId).map { food =>
+      NewMeal(
+        name = mealSite.name,
+        foodId = food.id,
+        portion = mealSite.portion,
+        calories = getCalories(mealSite.portion, food),
+        protein = getProtein(mealSite.portion, food),
+        fat = getFat(mealSite.portion, food),
+        carbs = getCarbs(mealSite.portion, food),
+        eatenAt = mealSite.eatenAt,
+        notes = mealSite.notes
+      )
+    }
+  
   private def getFat(portion: Int, food: Food): Int =
     food.fat * portion
 
