@@ -104,6 +104,13 @@ const currentTimeValue = () => {
   return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 };
 
+const resetMealForm = () => {
+  mealForm.reset();
+  state.selectedFoodId = null;
+  mealTimeInput.value = currentTimeValue();
+  mealPortionInput.value = 100;
+};
+
 const totalCalories = () =>
   state.meals.reduce((sum, meal) => sum + meal.calories, 0);
 
@@ -240,6 +247,7 @@ const applyFoodToForm = (food) => {
   state.selectedFoodId = food.id;
   mealNameInput.value = food.name;
   mealCaloriesInput.value = food.calories;
+  mealPortionInput.value = 100;
   mealNotesInput.value = food.notes;
   openFoodLibrary(false);
   renderFoodLibrary();
@@ -338,9 +346,7 @@ mealForm.addEventListener("submit", async (event) => {
       foodId: selectedFood?.id ?? null
     });
 
-    mealForm.reset();
-    state.selectedFoodId = null;
-    mealTimeInput.value = currentTimeValue();
+    resetMealForm();
     await loadMeals();
     render();
   } catch (error) {
@@ -410,7 +416,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 const init = async () => {
-  mealTimeInput.value = currentTimeValue();
+  resetMealForm();
   await Promise.all([loadMeals(), loadFoods()]);
   render();
 };

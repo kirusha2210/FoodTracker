@@ -17,6 +17,7 @@ lazy val root = (project in file("."))
       "org.typelevel" %% "cats-effect" % V.catsEffect,
       "org.http4s" %% "http4s-dsl" % V.http4s,
       "org.http4s" %% "http4s-ember-server" % V.http4s,
+      "org.http4s" %% "http4s-ember-client" % V.http4s,
       "org.tpolecat" %% "doobie-core" % V.doobie,
       "org.xerial" % "sqlite-jdbc" % V.sqlite,
       "ch.qos.logback" % "logback-classic" % V.logback,

@@ -3,6 +3,7 @@ package repository
 import cats.effect.IO
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
+import doobie.util.update.Update
 
 case class Food(
                  id: Long,
@@ -25,16 +26,20 @@ case class NewFood(
 
 class FoodRepository(xa: Transactor[IO]) {
   def create(newFood: NewFood): IO[Int] = {
-    sql"""insert into foods(name, description, carbs, calories, protein, fat)
-          |values (
-          |   ${newFood.name},
-          |   ${newFood.description},
-          |   ${newFood.calories},
-          |   ${newFood.protein},
-          |   ${newFood.fat}
-          |   ${newFood.carbs},
-          |)               
-          |""".stripMargin.update.run.transact(xa)
+    sql"""
+          insert into foods(name, description, carbs, calories, protein, fat)
+          values (?, ?, ?, ?, ?, ?)
+       """
+      .update.run.transact(xa)
+  }
+  
+  def createFoods(newFoods: List[NewFood]): IO[Int] = {
+    val sql = """
+          insert into foods(name, description, carbs, calories, protein, fat)
+          values (?, ?, ?, ?, ?, ?)
+       """
+
+    Update[NewFood](sql).updateMany(newFoods).transact(xa)
   }
 
   def listAll: IO[List[Food]] = {
